@@ -1,5 +1,27 @@
 __pycache__/
 *.py[cod]
+*.pyo
 .DS_Store
 Desafios*.pdf
 tmp/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Test / coverage artefacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
