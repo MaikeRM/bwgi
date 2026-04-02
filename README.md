@@ -1,5 +1,7 @@
 # BWGI Python Challenge
 
+![CI](https://github.com/MaikeRM/bwgi/actions/workflows/ci.yml/badge.svg)
+
 Solução dos três desafios proposta no enunciado, implementada em Python usando apenas a biblioteca padrão.
 
 Resumo da entrega:
