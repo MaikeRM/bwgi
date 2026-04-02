@@ -17,7 +17,12 @@ def last_lines(
         chunk_size: Maximum bytes to read per I/O operation.
 
     Yields:
-        File lines in reverse order (including '\\n').
+        File lines in reverse order. Lines terminated by ``'\\n'`` include it;
+        the first line of the file is yielded without ``'\\n'`` when the file
+        does not end with a newline. Empty files yield nothing.
+
+    Raises:
+        ValueError: If ``chunk_size`` is not a positive integer.
     """
     if chunk_size <= 0:
         raise ValueError("chunk_size must be a positive integer")

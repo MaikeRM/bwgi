@@ -84,7 +84,7 @@ class computed_property:
         return f"_cp_snap_{self.__name__}"
 
     def _snapshot(self, obj: Any) -> Tuple:
-        """Return a tuple of the current dependency values for *obj*.
+        """Return a frozen tuple of the current dependency values for *obj*.
 
         Missing attributes are represented by ``_MISSING``, so a transition
         from absent to present (or vice-versa) correctly triggers recomputation.
@@ -95,12 +95,18 @@ class computed_property:
             obj: The owner instance.
 
         Returns:
-            Tuple of current dependency values.
+            Tuple of frozen (deep-copied) dependency values. Values that cannot
+            be deep-copied are stored as live references (see ``_freeze``).
         """
         return tuple(self._freeze(getattr(obj, dep, _MISSING)) for dep in self._deps)
 
     def _freeze(self, value: Any) -> Any:
-        """Return a detached snapshot of a dependency value when possible."""
+        """Return a detached snapshot of a dependency value when possible.
+
+        Attempts ``deepcopy``; if that raises for any reason the original
+        reference is returned instead.  For non-copyable mutables this means
+        in-place mutations may *not* invalidate the cache.
+        """
         if value is _MISSING:
             return value
 
@@ -119,6 +125,9 @@ class computed_property:
         Returns:
             The descriptor itself when accessed from the class; otherwise the
             (possibly recomputed) property value.
+
+        Raises:
+            AttributeError: If no getter has been registered via ``__call__``.
         """
         if obj is None:
             return self
