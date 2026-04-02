@@ -75,9 +75,11 @@ class TestComputedProperty(unittest.TestCase):
         
         circle.diameter = 3
         self.assertEqual(circle.radius, 1.5)
+        self.assertEqual(circle.diameter, 3)
         
         del circle.diameter
         self.assertEqual(circle.radius, 0)
+        self.assertEqual(circle.diameter, 0)
 
     def test_preserves_docstring(self):
         class Circle:
@@ -268,6 +270,54 @@ class TestComputedProperty(unittest.TestCase):
 
         self.assertIsInstance(Widget.width, computed_property)
         self.assertEqual(Widget.width.__doc__, 'Widget width.')
+
+    def test_setter_invalidates_cache_without_dependencies(self):
+        """Setter must invalidate cached values even when there are no deps."""
+        class Counter:
+            def __init__(self):
+                self.calls = 0
+                self._value = 1
+
+            @computed_property()
+            def value(self):
+                self.calls += 1
+                return self._value
+
+            @value.setter
+            def value(self, value):
+                self._value = value
+
+        counter = Counter()
+        self.assertEqual(counter.value, 1)
+        self.assertEqual(counter.calls, 1)
+
+        counter.value = 10
+        self.assertEqual(counter.value, 10)
+        self.assertEqual(counter.calls, 2)
+
+    def test_subclass_setter_does_not_mutate_base_descriptor(self):
+        """Subclass setter must not leak back into the base descriptor."""
+        class Base:
+            def __init__(self, x):
+                self.x = x
+
+            @computed_property('x')
+            def doubled(self):
+                return self.x * 2
+
+        class Child(Base):
+            @Base.doubled.setter
+            def doubled(self, value):
+                self.x = value / 2
+
+        base = Base(2)
+        child = Child(2)
+
+        with self.assertRaises(AttributeError):
+            base.doubled = 10
+
+        child.doubled = 10
+        self.assertEqual(child.x, 5)
 
 
 if __name__ == '__main__':

@@ -58,8 +58,9 @@ class computed_property:
         Returns:
             This descriptor instance.
         """
-        self._fset = fset
-        return self
+        prop = self._copy()
+        prop._fset = fset
+        return prop
 
     def deleter(self, fdel: Callable) -> "computed_property":
         """Attach a deleter to the descriptor.
@@ -70,8 +71,9 @@ class computed_property:
         Returns:
             This descriptor instance.
         """
-        self._fdel = fdel
-        return self
+        prop = self._copy()
+        prop._fdel = fdel
+        return prop
 
     @property
     def _cache_key(self) -> str:
@@ -114,6 +116,22 @@ class computed_property:
             return deepcopy(value)
         except Exception:
             return value
+
+    def _copy(self) -> "computed_property":
+        """Return a shallow copy of the descriptor metadata and accessors."""
+        prop = type(self)(*self._deps)
+        prop._fget = self._fget
+        prop._fset = self._fset
+        prop._fdel = self._fdel
+        prop.__doc__ = self.__doc__
+        if hasattr(self, "__name__"):
+            prop.__name__ = self.__name__
+        return prop
+
+    def _invalidate_cache(self, obj: Any) -> None:
+        """Remove any cached value and snapshot stored on *obj*."""
+        obj.__dict__.pop(self._cache_key, None)
+        obj.__dict__.pop(self._snap_key, None)
 
     def __get__(self, obj: Any, objtype: Optional[type] = None) -> Any:
         """Return the cached value, recomputing it if dependencies have changed.
@@ -161,6 +179,7 @@ class computed_property:
             name = getattr(self, "__name__", "?")
             raise AttributeError(f"can't set attribute '{name}'")
         self._fset(obj, value)
+        self._invalidate_cache(obj)
 
     def __delete__(self, obj: Any) -> None:
         """Delegate to the registered deleter, or raise if none is set.
@@ -175,3 +194,4 @@ class computed_property:
             name = getattr(self, "__name__", "?")
             raise AttributeError(f"can't delete attribute '{name}'")
         self._fdel(obj)
+        self._invalidate_cache(obj)
