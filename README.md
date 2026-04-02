@@ -11,6 +11,20 @@ Resumo da entrega:
 - suíte automatizada cobrindo cenários do enunciado e casos de borda;
 - sem dependências externas.
 
+## Estrutura do projeto
+
+```
+bwgi/
+├── reconcile_accounts.py      # Desafio 1 — conciliação de transações
+├── last_lines.py              # Desafio 2 — leitura reversa de arquivos
+├── computed_property.py       # Desafio 3 — descriptor com cache por dependências
+├── tests/
+│   ├── test_reconcile_accounts.py
+│   ├── test_last_lines.py
+│   └── test_computed_property.py
+└── .github/workflows/ci.yml  # Pipeline de CI (Python 3.9)
+```
+
 ## Como executar
 
 Rodar a suíte completa:
