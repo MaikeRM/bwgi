@@ -25,14 +25,6 @@ bwgi/
 └── .github/workflows/ci.yml  # Pipeline de CI (Python 3.9)
 ```
 
-## Como executar
-
-Rodar a suíte completa:
-
-```bash
-python3 -m unittest discover -s tests -v
-```
-
 ## Desafio `reconcile_accounts`
 
 Implementação em `reconcile_accounts.py`.
@@ -151,10 +143,9 @@ Implementar um descriptor análogo a `property`, mas com cache baseado em depend
 
 ## Testes
 
-Os testes estão em:
-
-- `tests/test_reconcile_accounts.py`
-- `tests/test_last_lines.py`
-- `tests/test_computed_property.py`
-
-No estado atual do repositório, a suíte contém 45 testes automatizados cobrindo os cenários principais do enunciado e casos de borda relevantes para avaliação.
+| Desafio | Arquivo | Testes |
+|---|---|---|
+| `reconcile_accounts` | `tests/test_reconcile_accounts.py` | 16 |
+| `last_lines` | `tests/test_last_lines.py` | 15 |
+| `computed_property` | `tests/test_computed_property.py` | 14 |
+| **Total** | | **45** |
