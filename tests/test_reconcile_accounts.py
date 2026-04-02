@@ -70,6 +70,20 @@ class ReconcileAccountsTests(unittest.TestCase):
 
         self.assertEqual([row[-1] for row in out2], [MISSING, FOUND, MISSING])
 
+    def test_matches_with_plus_one_day_offset(self) -> None:
+        """t2 is 1 day ahead of t1 (offset +1) and must still be FOUND.
+
+        This exercises the third slot of DATE_OFFSETS in isolation: -1 and 0
+        are absent, so only the +1 bucket can satisfy the match.
+        """
+        transactions1 = [["2020-12-04", "Tecnologia", "50.00", "AWS"]]
+        transactions2 = [["2020-12-05", "Tecnologia", "50.00", "AWS"]]
+
+        out1, out2 = reconcile_accounts(transactions1, transactions2)
+
+        self.assertEqual(out1[0][-1], FOUND)
+        self.assertEqual(out2[0][-1], FOUND)
+
     def test_does_not_mutate_inputs(self) -> None:
         """Verify inputs are structurally preserved and unaltered."""
         transactions1 = [["2020-12-04", "Tecnologia", "16.00", "Bitbucket"]]
