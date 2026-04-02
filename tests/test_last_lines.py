@@ -106,6 +106,16 @@ class LastLinesTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             list(last_lines(self.filepath, chunk_size=-1))
 
+    def test_invalid_chunk_size_non_integer_types(self) -> None:
+        """Non-integer chunk_size values must raise ValueError."""
+        with open(self.filepath, "wb") as f:
+            f.write(b"hello\n")
+
+        for invalid_chunk_size in (1.5, "4", None, True, False):
+            with self.subTest(chunk_size=invalid_chunk_size):
+                with self.assertRaises(ValueError):
+                    list(last_lines(self.filepath, chunk_size=invalid_chunk_size))
+
     def test_single_line_with_newline(self) -> None:
         """A file with exactly one line (with trailing newline) yields that line."""
         with open(self.filepath, "wb") as f:

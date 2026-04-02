@@ -24,7 +24,7 @@ def last_lines(
     Raises:
         ValueError: If ``chunk_size`` is not a positive integer.
     """
-    if chunk_size <= 0:
+    if isinstance(chunk_size, bool) or not isinstance(chunk_size, int) or chunk_size <= 0:
         raise ValueError("chunk_size must be a positive integer")
 
     with open(filename, "rb") as f:
